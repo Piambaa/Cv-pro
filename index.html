@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Pro · Generador Profesional</title>
+  
+  <!-- CSS EXTERNO -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- CDN - ESTILOS  -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Lato:wght@400;700;900&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  
+  <!--  CDN - LIBRERÍAS JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <!-- SortableJS para Drag & Drop -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+  <!--  PANTALLA DE BIENVENIDA  -->
+  <div class="welcome-screen" id="welcomeScreen">
+    <div class="welcome-card animate-fadeInUp">
+      <div class="welcome-icon"><i class="fas fa-file-alt" aria-hidden="true"></i></div>
+      <h1>CV Pro</h1>
+      <p class="text-muted mb-4">Crea tu hoja de vida profesional de manera fácil y rápida</p>
+      <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
+        <span class="feature-badge"><i class="fas fa-paint-brush" aria-hidden="true"></i> Personalizable</span>
+        <span class="feature-badge"><i class="fas fa-database" aria-hidden="true"></i> Multi-CV</span>
+        <span class="feature-badge"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</span>
+        <span class="feature-badge"><i class="fas fa-file-word" aria-hidden="true"></i> Word</span>
+      </div>
+      <button class="btn-welcome" id="btnEmpezar" aria-label="Comenzar a crear el CV">
+        <i class="fas fa-rocket me-2" aria-hidden="true"></i> Comenzar ahora
+      </button>
+      <button class="btn btn-link mt-3 text-muted" id="btnCargarEjemplo" aria-label="Cargar CV de ejemplo">
+        <i class="fas fa-file-import me-1" aria-hidden="true"></i> Cargar CV de ejemplo
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="container py-3" id="mainContent" style="display: none;">
+    <header class="hero-header p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap">
+      <div class="d-flex align-items-center gap-3">
+        <div class="logo-icon"><i class="fas fa-file-alt text-white fs-3" aria-hidden="true"></i></div>
+        <div class="logo-text">
+          <h1 class="fw-bold mb-0">CV Pro</h1>
+          <p class="text-muted mb-0 small">
+            <span id="cvActualLabel">Nuevo CV</span> · Generador profesional
+          </p>
+        </div>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-outline-primary rounded-pill" id="btnMisCVs" aria-label="Ver mis CVs guardados">
+          <i class="fas fa-folder-open me-2" aria-hidden="true"></i> Mis CVs
+        </button>
+        <div class="badge-custom"><i class="fas fa-palette me-2" aria-hidden="true"></i> Personaliza</div>
+        <button class="btn btn-outline-secondary rounded-pill" id="btnImprimir" aria-label="Imprimir CV">
+          <i class="fas fa-print" aria-hidden="true"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="row g-4">
+      <!--  PANEL IZQUIERDO - FORMULARIO  -->
+      <div class="col-lg-5">
+        <div class="card-custom p-4">
+          <div class="bg-light rounded-4 p-3 mb-3">
+            <i class="fas fa-info-circle text-primary" aria-hidden="true"></i>
+            <strong>Guía:</strong> Completa los campos, la vista previa se actualiza automáticamente.
+          </div>
+          
+          <!-- Progreso y checklist -->
+          <div class="progress-header">
+            <span><i class="fas fa-chart-line me-2" aria-hidden="true"></i> Progreso</span>
+            <div class="progress-bar-custom"><div class="progress-fill" id="progressFill"></div></div>
+            <span id="progressPercent">0%</span>
+          </div>
+          
+          <div class="requisitos-checklist">
+            <h6 class="fw-bold mb-2"><i class="fas fa-check-circle me-2 text-primary" aria-hidden="true"></i> Requisitos del CV</h6>
+            <div id="requisitosList">
+              <div class="requisito-item" data-req="nombre"><i class="far fa-circle" aria-hidden="true"></i> Nombre completo</div>
+              <div class="requisito-item" data-req="telefono"><i class="far fa-circle" aria-hidden="true"></i> Teléfono</div>
+              <div class="requisito-item" data-req="email"><i class="far fa-circle" aria-hidden="true"></i> Correo electrónico</div>
+              <div class="requisito-item" data-req="resumen"><i class="far fa-circle" aria-hidden="true"></i> Resumen profesional</div>
+              <div class="requisito-item" data-req="experiencia"><i class="far fa-circle" aria-hidden="true"></i> Experiencia laboral</div>
+            </div>
+          </div>
+
+          <!-- Datos personales -->
+          <h3 class="fw-bold fs-5 mb-3 pb-2 border-bottom"><i class="fas fa-user-circle me-2 text-primary" aria-hidden="true"></i> Datos personales</h3>
+          <div class="mb-3">
+            <input type="text" class="form-control" id="nombreInput" placeholder="Nombre completo *" required aria-required="true" aria-label="Nombre completo">
+          </div>
+          <div class="row g-3">
+            <div class="col-6"><input type="tel" class="form-control" id="telefonoInput" placeholder="Teléfono *" required aria-required="true" aria-label="Teléfono"></div>
+            <div class="col-6"><input type="email" class="form-control" id="emailInput" placeholder="Email *" required aria-required="true" aria-label="Correo electrónico"></div>
+          </div>
+          <div class="mb-3 mt-2"><input type="text" class="form-control" id="direccionInput" placeholder="Dirección" aria-label="Dirección"></div>
+          <div class="row g-3">
+            <div class="col-6"><input type="text" class="form-control" id="nacionalidadInput" placeholder="Nacionalidad" aria-label="Nacionalidad"></div>
+            <div class="col-6"><input type="date" class="form-control" id="fechaNacInput" aria-label="Fecha de nacimiento"></div>
+          </div>
+          
+          <div class="mb-4">
+            <label class="fw-semibold mb-1" for="fotoInput">Foto de perfil</label>
+            <input type="file" class="form-control" id="fotoInput" accept="image/*" aria-label="Subir foto de perfil">
+            <small class="text-muted">Máx 2MB · Se comprime automáticamente</small>
+            <div class="mt-2" id="fotoPreview"></div>
+          </div>
+
+          <h3 class="fw-bold fs-5 mb-3 pb-2 border-bottom"><i class="fas fa-pen me-2 text-primary" aria-hidden="true"></i> Resumen profesional</h3>
+          <div class="mb-4"><textarea class="form-control" id="resumenInput" rows="3" placeholder="Describe tu experiencia profesional..." aria-label="Resumen profesional"></textarea></div>
+
+          <!-- Idiomas -->
+          <h3 class="fw-bold fs-5 mb-3 pb-2 border-bottom"><i class="fas fa-language me-2 text-primary" aria-hidden="true"></i> Idiomas</h3>
+          <div id="idiomasContainer"></div>
+          <button class="btn btn-sm btn-primary-custom mb-4" id="agregarIdiomaBtn" aria-label="Agregar idioma">
+            <i class="fas fa-plus me-2" aria-hidden="true"></i> Agregar idioma
+          </button>
+
+          <!-- Habilidades -->
+          <h3 class="fw-bold fs-5 mb-3 pb-2 border-bottom"><i class="fas fa-code me-2 text-primary" aria-hidden="true"></i> Habilidades técnicas</h3>
+          <div id="habilidadesContainer"></div>
+          <button class="btn btn-sm btn-primary-custom mb-4" id="agregarHabilidadBtn" aria-label="Agregar habilidad">
+            <i class="fas fa-plus me-2" aria-hidden="true"></i> Agregar habilidad
+          </button>
+
+          <!-- Aptitudes -->
+          <h3 class="fw-bold fs-5 mb-3 pb-2 border-bottom"><i class="fas fa-star me-2 text-primary" aria-hidden="true"></i> Aptitudes</h3>
+          <div id="aptitudesContainer" class="aptitudes-list"></div>
+          <div class="row g-2 mb-4">
+            <div class="col-8"><input type="text" id="nuevaAptitud" placeholder="Nueva aptitud" class="form-control" aria-label="Nueva aptitud"></div>
+            <div class="col-4"><button id="agregarAptitudBtn" class="btn btn-primary-custom w-100" aria-label="Añadir aptitud">Añadir</button></div>
+          </div>
+
+          <!-- Formación -->
+          <h3 class="fw-bold fs-5 mb-3 pb-2 border-bottom"><i class="fas fa-graduation-cap me-2 text-primary" aria-hidden="true"></i> Formación</h3>
+          <div class="mb-3"><input type="text" class="form-control" id="formacionAnio" placeholder="Año / Institución" aria-label="Año e institución"></div>
+          <div class="mb-4"><input type="text" class="form-control" id="formacionTitulo" placeholder="Título obtenido" aria-label="Título obtenido"></div>
+
+          <!-- Certificaciones -->
+          <h3 class="fw-bold fs-5 mb-3 pb-2 border-bottom"><i class="fas fa-certificate me-2 text-primary" aria-hidden="true"></i> Certificaciones</h3>
+          <div id="certificacionesContainer"></div>
+          <button class="btn btn-sm btn-primary-custom mb-4" id="agregarCertificacionBtn" aria-label="Agregar certificación">
+            <i class="fas fa-plus me-2" aria-hidden="true"></i> Agregar certificación
+          </button>
+
+          <!-- Proyectos -->
+          <h3 class="fw-bold fs-5 mb-3 pb-2 border-bottom"><i class="fas fa-project-diagram me-2 text-primary" aria-hidden="true"></i> Proyectos</h3>
+          <div id="proyectosContainer"></div>
+          <button class="btn btn-sm btn-primary-custom mb-4" id="agregarProyectoBtn" aria-label="Agregar proyecto">
+            <i class="fas fa-plus me-2" aria-hidden="true"></i> Agregar proyecto
+          </button>
+
+          <!-- Experiencia -->
+          <h3 class="fw-bold fs-5 mb-3 pb-2 border-bottom"><i class="fas fa-briefcase me-2 text-primary" aria-hidden="true"></i> Experiencia laboral</h3>
+          <div id="experienciasContainer"></div>
+          <button class="btn btn-primary-custom w-100 mb-4" id="agregarExperienciaBtn" aria-label="Agregar experiencia laboral">
+            <i class="fas fa-plus-circle me-2" aria-hidden="true"></i> Agregar experiencia
+          </button>
+
+          <!-- BOTONES DE ACCIÓN  -->
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <button class="btn btn-secondary-custom w-100" id="btnLimpiar" aria-label="Limpiar todos los campos">
+                <i class="fas fa-eraser me-2" aria-hidden="true"></i> Limpiar
+              </button>
+            </div>
+            <div class="col-6">
+              <button class="btn btn-secondary-custom w-100" id="btnResetColores" aria-label="Restaurar colores por defecto">
+                <i class="fas fa-undo-alt me-2" aria-hidden="true"></i> Reset
+              </button>
+            </div>
+          </div>
+          
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <button class="btn btn-primary-custom w-100" id="btnGuardarBD" aria-label="Guardar CV en base de datos">
+                <i class="fas fa-database me-2" aria-hidden="true"></i> Guardar BD
+              </button>
+            </div>
+            <div class="col-6">
+              <button class="btn btn-secondary-custom w-100" id="btnNuevoCV" aria-label="Crear nuevo CV">
+                <i class="fas fa-file-medical me-2" aria-hidden="true"></i> Nuevo CV
+              </button>
+            </div>
+          </div>
+          
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <button class="btn btn-secondary-custom w-100" id="btnImportarJson" aria-label="Importar CV desde JSON">
+                <i class="fas fa-file-import me-2" aria-hidden="true"></i> Importar
+              </button>
+              <input type="file" id="inputImportarJson" accept=".json" style="display:none">
+            </div>
+            <div class="col-6">
+              <button class="btn btn-secondary-custom w-100" id="btnExportarJson" aria-label="Exportar CV a JSON">
+                <i class="fas fa-file-export me-2" aria-hidden="true"></i> Exportar
+              </button>
+            </div>
+          </div>
+          
+          <div class="row g-2 mb-4">
+            <div class="col-6">
+              <button class="btn btn-secondary-custom w-100" id="btnExportarWord" aria-label="Exportar a Word">
+                <i class="fas fa-file-word me-2" aria-hidden="true"></i> Word
+              </button>
+            </div>
+            <div class="col-6">
+              <button class="btn btn-primary-custom w-100" id="generarPdfBtn" aria-label="Descargar PDF">
+                <i class="fas fa-file-pdf me-2" aria-hidden="true"></i> PDF
+              </button>
+            </div>
+          </div>
+          
+          <div class="text-muted text-center small">
+            <i class="fas fa-save" aria-hidden="true"></i> Auto-guardado cada 30s · <kbd>Ctrl+S</kbd> para guardar
+          </div>
+        </div>
+      </div>
+
+      <!--  PANEL DERECHO - VISTA PREVIA  -->
+      <div class="col-lg-7">
+        <div class="card-custom p-4">
+          <!-- Selector de fuentes -->
+          <div class="font-selector d-flex align-items-center gap-2 flex-wrap mb-3" role="group" aria-label="Selector de fuente">
+            <span class="fw-semibold"><i class="fas fa-font" aria-hidden="true"></i> Fuente:</span>
+            <button class="font-option active" data-font="Inter" aria-label="Fuente Inter">Inter</button>
+            <button class="font-option" data-font="Poppins" aria-label="Fuente Poppins">Poppins</button>
+            <button class="font-option" data-font="Montserrat" aria-label="Fuente Montserrat">Montserrat</button>
+            <button class="font-option" data-font="Playfair Display" aria-label="Fuente Playfair">Playfair</button>
+            <button class="font-option" data-font="Roboto" aria-label="Fuente Roboto">Roboto</button>
+            <button class="font-option" data-font="Open Sans" aria-label="Fuente Open Sans">Open Sans</button>
+            <button class="font-option" data-font="Lato" aria-label="Fuente Lato">Lato</button>
+          </div>
+          
+          <!-- Selector de plantillas -->
+          <div class="template-selector d-flex gap-2 flex-wrap mb-3" role="group" aria-label="Selector de plantilla">
+            <button class="template-option active" data-template="modern" aria-label="Plantilla Moderna">Moderno</button>
+            <button class="template-option" data-template="minimal" aria-label="Plantilla Minimal">Minimal</button>
+            <button class="template-option" data-template="elegant" aria-label="Plantilla Elegante">Elegante</button>
+            <button class="template-option" data-template="corp" aria-label="Plantilla Corporativa">Corporativo</button>
+            <button class="template-option" data-template="bold" aria-label="Plantilla Bold">Bold</button>
+            <button class="template-option" data-template="pastel" aria-label="Plantilla Pastel">Pastel</button>
+          </div>
+
+          <!-- Controles de color -->
+          <div class="d-flex gap-3 flex-wrap bg-light p-3 rounded-5 mb-4 justify-content-center">
+            <div><label class="fw-semibold" for="bgColorPicker">Fondo:</label> <input type="color" id="bgColorPicker" value="#ffffff" aria-label="Color de fondo"></div>
+            <div><label class="fw-semibold" for="textColorPicker">Texto:</label> <input type="color" id="textColorPicker" value="#000000" aria-label="Color de texto"></div>
+            <div><label class="fw-semibold" for="borderColorPicker">Acento:</label> <input type="color" id="borderColorPicker" value="#6366f1" aria-label="Color de acento"></div>
+          </div>
+
+          <!-- VISTA PREVIA DEL CV -->
+          <div id="cv-content-for-pdf">
+            <div class="preview-header avoid-break">
+              <div class="preview-avatar" id="previewAvatar">
+                <span id="avatarInicial"></span>
+                <img id="avatarImg" style="display:none" alt="Foto de perfil">
+              </div>
+              <div class="preview-name">
+                <h2 id="previewNombre"></h2>
+                <p id="previewContacto"></p>
+                <p id="previewDireccion" class="text-secondary"></p>
+                <p id="previewEdad" class="text-muted small"></p>
+              </div>
+            </div>
+            
+            <div class="resumen avoid-break" id="previewResumen"></div>
+            
+            <div class="row avoid-break">
+              <div class="col-md-6">
+                <h4 class="fw-bold mb-3 section-heading">APTITUDES</h4>
+                <div id="previewAptitudes" class="d-flex flex-wrap gap-2 mb-4"></div>
+                <h4 class="fw-bold mb-3 section-heading">IDIOMAS</h4>
+                <div id="previewIdiomas" class="mb-4"></div>
+              </div>
+              <div class="col-md-6">
+                <h4 class="fw-bold mb-3 section-heading">FORMACIÓN</h4>
+                <p><strong id="previewFormacionAnio"></strong></p>
+                <p id="previewFormacionTitulo" class="mb-4"></p>
+              </div>
+            </div>
+            
+            <h4 class="fw-bold mb-3 section-heading avoid-break">HABILIDADES TÉCNICAS</h4>
+            <div id="previewHabilidades" class="mb-4"></div>
+            
+            <h4 class="fw-bold mb-3 section-heading avoid-break">CERTIFICACIONES</h4>
+            <div id="previewCertificaciones" class="mb-4"></div>
+            
+            <h4 class="fw-bold mb-3 section-heading avoid-break">PROYECTOS DESTACADOS</h4>
+            <div id="previewProyectos" class="mb-4"></div>
+            
+            <h4 class="fw-bold mb-3 section-heading avoid-break">EXPERIENCIA LABORAL</h4>
+            <div id="previewExperiencias"></div>
+          </div>
+          
+          <div class="bg-light rounded-4 p-3 mt-3 small text-muted">
+            <i class="fas fa-edit" aria-hidden="true"></i> <strong>Vista previa:</strong> Los datos aparecen SOLO cuando escribes
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  MODAL: MIS CVs GUARDADOS  -->
+  <div class="modal fade" id="modalMisCVs" tabindex="-1" aria-labelledby="modalMisCVsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content modal-custom">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="modalMisCVsLabel">
+            <i class="fas fa-folder-open me-2 text-primary" aria-hidden="true"></i> Mis CVs Guardados
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group mb-3">
+            <span class="input-group-text bg-light border-0 rounded-start-pill">
+              <i class="fas fa-search text-muted" aria-hidden="true"></i>
+            </span>
+            <input type="text" class="form-control border-0 bg-light rounded-end-pill" 
+                   id="buscarCVInput" placeholder="Buscar por nombre o email..." 
+                   aria-label="Buscar CV">
+          </div>
+          
+          <div id="listaCVsContainer"></div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-outline-danger rounded-pill" id="btnBorrarTodoBD">
+            <i class="fas fa-trash me-2" aria-hidden="true"></i> Borrar todo
+          </button>
+          <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  MODAL: CONFIRMACIÓN  -->
+  <div class="modal fade" id="modalConfirm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content modal-custom text-center">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;" aria-hidden="true"></i>
+          </div>
+          <h5 class="fw-bold mb-2" id="confirmTitle">¿Estás seguro?</h5>
+          <p class="text-muted mb-4" id="confirmMessage">Esta acción no se puede deshacer.</p>
+          <div class="d-flex gap-2 justify-content-center">
+            <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-danger rounded-pill" id="confirmBtn">Confirmar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  BOOTSTRAP JS  -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!--  BASE DE DATOS =-->
+  <script src="database.js"></script>
+  
+  <!--  JS PRINCIPAL  -->
+  <script src="script.js"></script>
+</body>
+</html>
